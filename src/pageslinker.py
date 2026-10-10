@@ -506,6 +506,8 @@ h1{font-size:20px;word-break:break-all;margin:0 0 6px}
 .bar>div{height:100%;width:0;background:var(--accent);transition:width .2s}
 button{background:var(--accent);border:0;color:#fff;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:14px;margin-right:8px}
 button:disabled{opacity:.5;cursor:not-allowed}
+.btn-a{display:inline-block;background:var(--accent);color:#fff;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:14px;margin-right:8px;text-decoration:none}
+.tag-ok{display:inline-block;padding:8px 14px;border-radius:8px;font-size:13px;background:#1d2f24;color:var(--ok)}
 .status{font-size:13px;color:var(--dim);margin-top:12px}
 .ok{color:var(--ok)}.bad{color:var(--bad)}
 #preview img,#preview video,#preview audio{max-width:100%;border-radius:8px}
@@ -522,8 +524,8 @@ a{color:var(--accent)}
     <div class="status" id="status">正在准备分片…</div>
   </div>
   <div class="card" style="display:none" id="out">
-    <button id="dl">下载文件</button>
-    <button id="dlc" disabled>正在校验…</button>
+    <a id="dl" class="btn-a" download="">下载文件</a>
+    <span id="dlc" class="tag-ok" hidden>正在校验…</span>
     <div class="status" id="verify"></div>
   </div>
   <div id="preview"></div>
@@ -613,7 +615,7 @@ async function downloadAll() {
     dl.href = url;
     dl.download = META.name;
     dlc.textContent = ok ? '校验通过 ✓' : '校验失败（仍可下载）';
-    dlc.disabled = false;
+    dlc.hidden = false;
     out.style.display = 'block';
     renderPreview(blob, url);
     status.textContent = '完成';
