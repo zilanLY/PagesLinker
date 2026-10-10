@@ -1,0 +1,44 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run selftest (engine, no GUI)
+        working-directory: src
+        run: python selftest.py
+
+      - name: Smoke test GUI import
+        working-directory: src
+        run: python -c "import ast; ast.parse(open('app.py',encoding='utf-8').read()); print('app.py syntax OK')"
+
+      - name: Build EXE
+        working-directory: src
+        shell: cmd
+        run: pyinstaller --onefile --windowed --name PagesLinker --collect-all tkinterdnd2 app.py
+
+      - name: Smoke test EXE (CLI argv pickup)
+        working-directory: src
+        shell: cmd
+        run: dist\PagesLinker.exe --selftest-smoke
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PagesLinker-windows
+          path: src/dist/PagesLinker.exe
+          if-no-files-found: error
